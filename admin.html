@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iSpot Cannes — Admin Dashboard</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --color-bg: #0A0E17;
+      --color-surface: #111827;
+      --color-surface-alt: #1E293B;
+      --color-primary: #0095B0;
+      --color-accent: #4AC500;
+      --color-gold: #D4A853;
+      --color-text: #FFFFFF;
+      --color-text-secondary: #94A3B8;
+      --color-text-dim: #64748B;
+      --color-danger: #EF4444;
+      --gradient-primary: linear-gradient(135deg, #0095B0, #4AC500);
+      --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* --- PIN Gate --- */
+    .pin-gate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      gap: 16px;
+    }
+
+    .pin-gate h2 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .pin-gate input {
+      width: 200px;
+      padding: 12px 20px;
+      font-size: 24px;
+      text-align: center;
+      letter-spacing: 0.3em;
+      background: var(--color-surface);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      color: var(--color-text);
+      font-family: var(--font);
+      outline: none;
+      -webkit-text-security: disc;
+    }
+
+    .pin-gate input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .pin-error {
+      color: var(--color-danger);
+      font-size: 14px;
+      height: 20px;
+    }
+
+    /* --- Dashboard --- */
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .dash-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .dash-header h1 span {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dash-updated {
+      font-size: 13px;
+      color: var(--color-text-dim);
+    }
+
+    .back-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* --- Stats Cards --- */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .stat-card__label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .stat-card__value {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-card__sub {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      margin-top: 4px;
+    }
+
+    /* --- Sections --- */
+    .section {
+      margin-bottom: 32px;
+    }
+
+    .section h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--color-text-secondary);
+    }
+
+    /* --- Archetype Distribution --- */
+    .dist-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dist-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .dist-item__name {
+      width: 200px;
+      font-size: 14px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .dist-item__bar-bg {
+      flex: 1;
+      height: 28px;
+      background: var(--color-surface);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dist-item__bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1);
+      min-width: 2px;
+    }
+
+    .dist-item__count {
+      width: 80px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .dist-item__pct {
+      color: var(--color-text-dim);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    /* --- Answer Breakdown --- */
+    .question-breakdown {
+      background: var(--color-surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .question-breakdown h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--color-text);
+    }
+
+    .qb-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .qb-option__letter {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      flex-shrink: 0;
+    }
+
+    .qb-option__bar-bg {
+      flex: 1;
+      height: 20px;
+      background: var(--color-surface-alt);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .qb-option__bar-fill {
+      height: 100%;
+      background: var(--gradient-primary);
+      border-radius: 4px;
+      transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1);
+      min-width: 2px;
+    }
+
+    .qb-option__count {
+      width: 40px;
+      text-align: right;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      flex-shrink: 0;
+    }
+
+    /* --- Recent Sessions Table --- */
+    .table-wrap {
+      background: var(--color-surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      overflow: hidden;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: var(--color-surface-alt);
+      z-index: 1;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--color-text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 11px;
+    }
+
+    td {
+      padding: 10px 16px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      color: var(--color-text-secondary);
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .td-archetype {
+      color: var(--color-text);
+      font-weight: 500;
+    }
+
+    /* --- Action Buttons --- */
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 150ms ease;
+    }
+
+    .btn:active { opacity: 0.7; }
+
+    .btn--primary {
+      background: var(--gradient-primary);
+      color: white;
+    }
+
+    .btn--secondary {
+      background: var(--color-surface-alt);
+      color: var(--color-text-secondary);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .btn--danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--color-danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* --- Clear Confirmation --- */
+    .clear-confirm {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .clear-confirm.active { display: flex; }
+
+    .clear-confirm input {
+      padding: 8px 16px;
+      background: var(--color-surface);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      color: var(--color-text);
+      font-family: var(--font);
+      font-size: 14px;
+      outline: none;
+      width: 180px;
+    }
+
+    .clear-confirm span {
+      font-size: 13px;
+      color: var(--color-text-dim);
+    }
+
+    /* --- Empty State --- */
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      color: var(--color-text-dim);
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PIN Gate -->
+  <div class="pin-gate" id="pin-gate">
+    <h2>Admin Access</h2>
+    <input type="tel" id="pin-input" maxlength="4" placeholder="PIN" autofocus>
+    <p class="pin-error" id="pin-error"></p>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+    <div class="dash-header">
+      <div>
+        <h1><span>iSpot</span> Cannes Admin</h1>
+        <p class="dash-updated" id="last-updated"></p>
+      </div>
+      <a href="index.html" class="back-link">&larr; Back to Quiz</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row"></div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn--primary" id="btn-refresh">Refresh</button>
+      <button class="btn btn--secondary" id="btn-export-csv">Export CSV</button>
+      <button class="btn btn--secondary" id="btn-export-json">Export JSON</button>
+      <button class="btn btn--danger" id="btn-clear">Clear All Data</button>
+    </div>
+    <div class="clear-confirm" id="clear-confirm">
+      <span>Type CLEAR to confirm:</span>
+      <input type="text" id="clear-input" placeholder="CLEAR">
+      <button class="btn btn--danger" id="btn-clear-confirm">Confirm</button>
+    </div>
+
+    <!-- Archetype Distribution -->
+    <div class="section">
+      <h2>Archetype Distribution</h2>
+      <div class="dist-list" id="dist-list"></div>
+    </div>
+
+    <!-- Answer Breakdown -->
+    <div class="section">
+      <h2>Answer Breakdown</h2>
+      <div id="answer-breakdown"></div>
+    </div>
+
+    <!-- Recent Sessions -->
+    <div class="section">
+      <h2>Recent Sessions</h2>
+      <div class="table-wrap" id="sessions-table"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'ispot_cannes_2026';
+      const PIN = '2026';
+
+      const ARCHETYPE_NAMES = {
+        glowGetter: 'The Glow Getter',
+        powerNetworker: 'The Power Networker',
+        recharger: 'The Recharger'
+      };
+
+      const ARCHETYPE_COLORS = {
+        glowGetter: '#5BA4CF',
+        powerNetworker: '#D4A853',
+        recharger: '#9B8EC4'
+      };
+
+      const ARCHETYPE_KEYS = Object.keys(ARCHETYPE_NAMES);
+
+      const QUESTIONS = [
+        {
+          text: "First morning in Cannes — opening move?",
+          options: ['Mirror check, camera-ready', 'Espresso + working the room', 'Slow start, ocean breeze']
+        },
+        {
+          text: "After a 3-hour session — recharging how?",
+          options: ['Quick refresh / touch-up', 'Drinks with new friends', 'Quiet corner to decompress']
+        },
+        {
+          text: "Last night of Cannes?",
+          options: ['Recommended dinner', 'Biggest party of the week', 'Face mask + room service']
+        }
+      ];
+
+      // --- PIN Gate ---
+      const pinInput = document.getElementById('pin-input');
+      const pinError = document.getElementById('pin-error');
+
+      pinInput.addEventListener('input', function () {
+        pinError.textContent = '';
+        if (this.value.length === 4) {
+          if (this.value === PIN) {
+            document.getElementById('pin-gate').style.display = 'none';
+            document.getElementById('dashboard').classList.add('active');
+            renderDashboard();
+          } else {
+            pinError.textContent = 'Incorrect PIN';
+            this.value = '';
+          }
+        }
+      });
+
+      // --- Data ---
+      function loadData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return null;
+          const data = JSON.parse(raw);
+          // Ensure archetypeCounts exists (migration from v1)
+          if (!data.archetypeCounts) {
+            data.archetypeCounts = { glowGetter: 0, powerNetworker: 0, recharger: 0 };
+          }
+          return data;
+        } catch {
+          return null;
+        }
+      }
+
+      // --- Render Dashboard ---
+      function renderDashboard() {
+        const data = loadData();
+        document.getElementById('last-updated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+
+        if (!data || data.totalParticipants === 0) {
+          renderEmpty();
+          return;
+        }
+
+        renderStats(data);
+        renderDistribution(data);
+        renderAnswerBreakdown(data);
+        renderSessions(data);
+      }
+
+      function renderEmpty() {
+        document.getElementById('stats-row').innerHTML = '';
+        document.getElementById('dist-list').innerHTML = '<div class="empty-state">No data yet. Complete a quiz to see stats.</div>';
+        document.getElementById('answer-breakdown').innerHTML = '';
+        document.getElementById('sessions-table').innerHTML = '';
+      }
+
+      function renderStats(data) {
+        const total = data.totalParticipants;
+        const avgDuration = data.sessions.length > 0
+          ? Math.round(data.sessions.reduce((s, sess) => s + (sess.durationMs || 0), 0) / data.sessions.length / 1000)
+          : 0;
+
+        const counts = data.archetypeCounts || {};
+        const mostPopular = ARCHETYPE_KEYS.reduce((a, b) =>
+          (counts[a] || 0) >= (counts[b] || 0) ? a : b
+        );
+        const leastDistributed = ARCHETYPE_KEYS.reduce((a, b) =>
+          (counts[a] || 0) <= (counts[b] || 0) ? a : b
+        );
+
+        document.getElementById('stats-row').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-card__label">Total Participants</div>
+            <div class="stat-card__value">${total}</div>
+            <div class="stat-card__sub">${total * 2} samples given</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Avg. Duration</div>
+            <div class="stat-card__value">${avgDuration}s</div>
+            <div class="stat-card__sub">per quiz session</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Most Popular</div>
+            <div class="stat-card__value" style="font-size:22px">${ARCHETYPE_NAMES[mostPopular]}</div>
+            <div class="stat-card__sub">${counts[mostPopular] || 0} matched</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__label">Least Distributed</div>
+            <div class="stat-card__value" style="font-size:22px">${ARCHETYPE_NAMES[leastDistributed]}</div>
+            <div class="stat-card__sub">${counts[leastDistributed] || 0} matched</div>
+          </div>
+        `;
+      }
+
+      function renderDistribution(data) {
+        const counts = data.archetypeCounts || {};
+        const maxCount = Math.max(...ARCHETYPE_KEYS.map(k => counts[k] || 0), 1);
+        const totalSamples = ARCHETYPE_KEYS.reduce((s, k) => s + (counts[k] || 0), 0) || 1;
+
+        document.getElementById('dist-list').innerHTML = ARCHETYPE_KEYS.map(key => {
+          const count = counts[key] || 0;
+          const pct = Math.round((count / totalSamples) * 100);
+          const width = Math.round((count / maxCount) * 100);
+          return `
+            <div class="dist-item">
+              <span class="dist-item__name">${ARCHETYPE_NAMES[key]}</span>
+              <div class="dist-item__bar-bg">
+                <div class="dist-item__bar-fill" style="width:${width}%;background:${ARCHETYPE_COLORS[key]}"></div>
+              </div>
+              <span class="dist-item__count">${count}<span class="dist-item__pct"> (${pct}%)</span></span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderAnswerBreakdown(data) {
+        const container = document.getElementById('answer-breakdown');
+        const sessions = data.sessions;
+
+        container.innerHTML = QUESTIONS.map((q, qi) => {
+          const counts = [0, 0, 0];
+          sessions.forEach(s => {
+            if (s.answers && s.answers[qi] !== undefined) {
+              counts[s.answers[qi]]++;
+            }
+          });
+          const maxCount = Math.max(...counts, 1);
+
+          return `
+            <div class="question-breakdown">
+              <h3>Q${qi + 1}: ${q.text}</h3>
+              ${q.options.map((opt, oi) => `
+                <div class="qb-option">
+                  <span class="qb-option__letter">${String.fromCharCode(65 + oi)}</span>
+                  <div class="qb-option__bar-bg">
+                    <div class="qb-option__bar-fill" style="width:${Math.round((counts[oi] / maxCount) * 100)}%"></div>
+                  </div>
+                  <span class="qb-option__count">${counts[oi]}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderSessions(data) {
+        const sessions = data.sessions.slice(-50).reverse();
+        if (sessions.length === 0) {
+          document.getElementById('sessions-table').innerHTML = '<div class="empty-state">No sessions recorded yet.</div>';
+          return;
+        }
+
+        document.getElementById('sessions-table').innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Time</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Company</th>
+                <th>Answers</th>
+                <th>Archetype</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sessions.map((s, i) => {
+                const contact = s.contact || {};
+                const name = [contact.firstName, contact.lastName].filter(Boolean).join(' ') || '—';
+                const email = contact.email || '—';
+                const title = contact.title || '—';
+                const company = contact.company || '—';
+                const archetype = s.result ? (ARCHETYPE_NAMES[s.result] || s.result) : ((s.results || []).join(' + '));
+                return `
+                  <tr>
+                    <td>${data.sessions.length - i}</td>
+                    <td>${new Date(s.timestamp).toLocaleString()}</td>
+                    <td>${escapeHtml(name)}</td>
+                    <td>${escapeHtml(email)}</td>
+                    <td>${escapeHtml(title)}</td>
+                    <td>${escapeHtml(company)}</td>
+                    <td>${(s.answers || []).map(a => String.fromCharCode(65 + a)).join(', ')}</td>
+                    <td class="td-archetype">${archetype}</td>
+                    <td>${s.durationMs ? Math.round(s.durationMs / 1000) + 's' : '—'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // --- Actions ---
+      document.getElementById('btn-refresh').addEventListener('click', renderDashboard);
+
+      document.getElementById('btn-export-csv').addEventListener('click', function () {
+        const data = loadData();
+        if (!data || data.sessions.length === 0) return alert('No data to export.');
+
+        const headers = ['ID', 'Timestamp', 'First Name', 'Last Name', 'Email', 'Title', 'Company', 'Q1', 'Q2', 'Q3', 'Archetype', 'Duration (s)'];
+        const rows = data.sessions.map(s => {
+          const contact = s.contact || {};
+          const archetype = s.result ? (ARCHETYPE_NAMES[s.result] || s.result) : ((s.results || []).join(' + '));
+          return [
+            s.id,
+            s.timestamp,
+            contact.firstName || '',
+            contact.lastName || '',
+            contact.email || '',
+            contact.title || '',
+            contact.company || '',
+            ...((s.answers || []).map((a, qi) => QUESTIONS[qi] ? QUESTIONS[qi].options[a] : a)),
+            archetype,
+            s.durationMs ? Math.round(s.durationMs / 1000) : ''
+          ];
+        });
+
+        const csv = [headers, ...rows].map(row =>
+          row.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',')
+        ).join('\n');
+
+        downloadFile(csv, 'ispot-cannes-data.csv', 'text/csv');
+      });
+
+      document.getElementById('btn-export-json').addEventListener('click', function () {
+        const data = loadData();
+        if (!data) return alert('No data to export.');
+        downloadFile(JSON.stringify(data, null, 2), 'ispot-cannes-data.json', 'application/json');
+      });
+
+      function downloadFile(content, filename, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // --- Clear Data ---
+      document.getElementById('btn-clear').addEventListener('click', function () {
+        document.getElementById('clear-confirm').classList.toggle('active');
+        document.getElementById('clear-input').value = '';
+        document.getElementById('clear-input').focus();
+      });
+
+      document.getElementById('btn-clear-confirm').addEventListener('click', function () {
+        const input = document.getElementById('clear-input');
+        if (input.value.trim().toUpperCase() === 'CLEAR') {
+          localStorage.removeItem(STORAGE_KEY);
+          document.getElementById('clear-confirm').classList.remove('active');
+          renderDashboard();
+        } else {
+          input.value = '';
+          input.placeholder = 'Type CLEAR';
+          input.focus();
+        }
+      });
+
+    })();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "iSpot Cannes Quiz",
+  "short_name": "iSpot Cannes",
+  "description": "Discover Your Cannes Mindset - iSpot x L'Occitane",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#060B14",
+  "theme_color": "#0095B0",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

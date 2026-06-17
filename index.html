@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="iSpot Cannes">
+  <title>iSpot - Discover Your Cannes Mindset</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Ambient background -->
+    <div class="app-bg">
+      <div class="bg-orb bg-orb--teal"></div>
+      <div class="bg-orb bg-orb--green"></div>
+      <div class="bg-orb bg-orb--purple"></div>
+      <div class="bg-grid"></div>
+      <div class="bg-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- Confetti canvas (results) -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ===== SCREEN 1: WELCOME ===== -->
+    <section id="screen-welcome" class="screen screen--active">
+      <div class="welcome-content">
+        <!-- Floating emoji decorations -->
+        <div class="welcome-floaters">
+          <span class="floater">✨</span>
+          <span class="floater">💧</span>
+          <span class="floater">🤝</span>
+          <span class="floater">💋</span>
+          <span class="floater">🌿</span>
+          <span class="floater">❄️</span>
+          <span class="floater">🌸</span>
+          <span class="floater">☀️</span>
+        </div>
+
+        <div class="welcome-logo" id="logo-tap-target">
+          <svg class="ispot-logo" viewBox="0 0 180 55" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0095B0"/>
+                <stop offset="100%" stop-color="#4AC500"/>
+              </linearGradient>
+            </defs>
+            <text x="90" y="42" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif" font-size="48" font-weight="800" fill="white" letter-spacing="-2">
+              <tspan fill="url(#logo-gradient)">i</tspan>Spot
+            </text>
+          </svg>
+          <div class="logo-glow"></div>
+        </div>
+        <div class="welcome-badge">
+          <span class="badge-dot"></span>
+          Cannes Lions 2026
+        </div>
+        <h1 class="welcome-title">
+          <span class="title-line title-line--1">Discover Your</span>
+          <span class="title-line title-line--2">Cannes Mindset</span>
+        </h1>
+        <p class="welcome-subtitle">Answer 3 quick questions and get L'Occitane treats matched to your vibe.</p>
+        <button class="btn-start" id="btn-start">
+          <span class="btn-start__text">Let's Go</span>
+          <span class="btn-start__glow"></span>
+          <span class="btn-start__shimmer"></span>
+          <svg class="btn-start__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div class="welcome-footer">
+          In partnership with <strong>L'Occitane en Provence</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 2: CONTACT INFO ===== -->
+    <section id="screen-contact" class="screen">
+      <div class="contact-content">
+        <h2 class="contact-title">Tell us about yourself</h2>
+        <p class="contact-subtitle">So we can personalize your experience</p>
+        <form class="contact-form" id="contact-form" autocomplete="off">
+          <div class="contact-row">
+            <div class="contact-field">
+              <label class="contact-label" for="contact-first">First Name</label>
+              <input class="contact-input" type="text" id="contact-first" required placeholder="First name">
+            </div>
+            <div class="contact-field">
+              <label class="contact-label" for="contact-last">Last Name</label>
+              <input class="contact-input" type="text" id="contact-last" required placeholder="Last name">
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-field">
+              <label class="contact-label" for="contact-title">Title</label>
+              <input class="contact-input" type="text" id="contact-title" required placeholder="Job title">
+            </div>
+            <div class="contact-field">
+              <label class="contact-label" for="contact-company">Company</label>
+              <input class="contact-input" type="text" id="contact-company" required placeholder="Company">
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-field contact-field--full">
+              <label class="contact-label" for="contact-email">Email</label>
+              <input class="contact-input" type="email" id="contact-email" required placeholder="Email address">
+            </div>
+          </div>
+          <button class="btn-start btn-contact-submit" type="submit" id="btn-contact-submit">
+            <span class="btn-start__text">Start the Quiz</span>
+            <span class="btn-start__glow"></span>
+            <span class="btn-start__shimmer"></span>
+            <svg class="btn-start__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 3: QUESTIONS ===== -->
+    <section id="screen-question" class="screen">
+      <div class="question-layout">
+        <header class="question-header">
+          <svg class="ispot-logo-sm" viewBox="0 0 180 55" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logo-gradient-sm" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0095B0"/>
+                <stop offset="100%" stop-color="#4AC500"/>
+              </linearGradient>
+            </defs>
+            <text x="90" y="42" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif" font-size="48" font-weight="800" fill="white" letter-spacing="-2">
+              <tspan fill="url(#logo-gradient-sm)">i</tspan>Spot
+            </text>
+          </svg>
+          <div class="progress-bar">
+            <div class="progress-bar__fill" id="progress-fill"></div>
+            <div class="progress-bar__shimmer"></div>
+          </div>
+          <div class="question-counter" id="question-counter">Q1 of 3</div>
+        </header>
+
+        <!-- Floating emoji for current question -->
+        <div class="question-emoji" id="question-emoji"></div>
+
+        <div class="question-body">
+          <h2 class="question-text" id="question-text"></h2>
+          <div class="answer-grid" id="answer-grid">
+            <button class="answer-card" data-index="0">
+              <span class="answer-card__emoji" id="answer-emoji-0"></span>
+              <span class="answer-card__letter">A</span>
+              <span class="answer-card__text" id="answer-0"></span>
+              <span class="answer-card__check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </button>
+            <button class="answer-card" data-index="1">
+              <span class="answer-card__emoji" id="answer-emoji-1"></span>
+              <span class="answer-card__letter">B</span>
+              <span class="answer-card__text" id="answer-1"></span>
+              <span class="answer-card__check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </button>
+            <button class="answer-card" data-index="2">
+              <span class="answer-card__emoji" id="answer-emoji-2"></span>
+              <span class="answer-card__letter">C</span>
+              <span class="answer-card__text" id="answer-2"></span>
+              <span class="answer-card__check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <footer class="question-footer">
+          <span class="partnership-text">Samples by L'Occitane en Provence</span>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 4: ANALYZING ===== -->
+    <section id="screen-analyzing" class="screen">
+      <div class="analyzing-content">
+        <div class="analyzing-orb">
+          <div class="analyzing-orb__core"></div>
+          <div class="analyzing-orb__ring analyzing-orb__ring--1"></div>
+          <div class="analyzing-orb__ring analyzing-orb__ring--2"></div>
+          <div class="analyzing-orb__ring analyzing-orb__ring--3"></div>
+          <div class="analyzing-orb__particles">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <p class="analyzing-text" id="analyzing-text">Sage is reading your vibe...</p>
+        <div class="analyzing-bar">
+          <div class="analyzing-bar__fill" id="analyzing-bar-fill"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN 5: RESULTS ===== -->
+    <section id="screen-results" class="screen">
+      <div class="results-content">
+        <div class="results-sparkles">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+
+        <div class="results-header">
+          <p class="results-label">Sage says your Cannes mindset is...</p>
+          <h2 class="results-archetype-name" id="results-archetype-name"></h2>
+          <p class="results-archetype-desc" id="results-archetype-desc"></p>
+        </div>
+
+        <div class="results-products-label">Your L'Occitane Samples</div>
+        <div class="results-product-list" id="results-product-list"></div>
+
+        <div class="results-footer">
+          <p class="results-collect">
+            <span class="collect-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </span>
+            Show this screen to collect your samples
+          </p>
+          <div class="results-branding">
+            <span>Powered by <strong>iSpot</strong></span>
+            <span class="results-divider">|</span>
+            <span>Samples by <strong>L'Occitane en Provence</strong></span>
+          </div>
+        </div>
+        <div class="reset-indicator" id="reset-indicator">
+          <svg class="reset-ring" viewBox="0 0 36 36">
+            <circle class="reset-ring__bg" cx="18" cy="18" r="16" />
+            <circle class="reset-ring__fill" id="reset-ring-fill" cx="18" cy="18" r="16" />
+          </svg>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
