@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ispot-cannes-v2';
+const CACHE_NAME = 'ispot-cannes-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,8 @@ const ASSETS = [
   './hand-cream.png',
   './lip-balm.png',
   './aroma-roller.png',
-  './cooling-gel.png'
+  './cooling-gel.png',
+  './iSpot.png'
 ];
 
 // Install: cache all assets immediately
