@@ -303,7 +303,6 @@ html, body {
 .ispot-logo {
   width: 260px;
   height: auto;
-  border-radius: 12px;
   animation: logoBreath 3s ease-in-out infinite;
 }
 
@@ -630,7 +629,6 @@ html, body {
   width: 90px;
   height: auto;
   flex-shrink: 0;
-  border-radius: 6px;
 }
 
 /* Progress bar */
