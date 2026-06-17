@@ -11,7 +11,7 @@
   const STORAGE_KEY = 'ispot_cannes_2026';
   const RESULTS_TIMEOUT = 20000;
   const RESULTS_WARNING = 15000;
-  const ANALYZING_DURATION = 4000;
+  const ANALYZING_DURATION = 4000; // 3 messages x 1.33s each ≈ 4s
   const ADVANCE_DELAY = 1800;
 
   // ---- Archetypes ----
@@ -83,7 +83,6 @@
 
   const ANALYZING_MESSAGES = [
     'Sage is reading your vibe...',
-    'Sage is analyzing your answers...',
     'Sage is curating your match...',
     'Almost there...'
   ];
