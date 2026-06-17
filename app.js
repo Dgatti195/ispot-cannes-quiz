@@ -9,8 +9,7 @@
   // ---- Constants ----
 
   const STORAGE_KEY = 'ispot_cannes_2026';
-  const RESULTS_TIMEOUT = 20000;
-  const RESULTS_WARNING = 15000;
+  const RESET_DOUBLE_TAP_WINDOW = 500; // ms between taps to count as double-tap
   const ANALYZING_DURATION = 4500; // 3 messages x 1.5s each
   const ADVANCE_DELAY = 1800;
 
@@ -99,9 +98,7 @@
     startTime: null
   };
 
-  let resetTimer = null;
-  let warningTimer = null;
-  let countdownInterval = null;
+  let resetTapTime = 0;
   let logoTapCount = 0;
   let logoTapTimer = null;
   let confettiAnimId = null;
@@ -562,61 +559,25 @@
 
     // Save session data
     saveSession();
-
-    // Start auto-reset timer
-    setTimeout(() => startResetTimer(), 2000);
   }
 
-  // ---- Auto-Reset ----
+  // ---- Secret Reset (double-tap "Powered by iSpot" branding) ----
 
-  function startResetTimer() {
-    clearResetTimers();
-
-    const indicator = $('#reset-indicator');
-    const ringFill = $('#reset-ring-fill');
-    const circumference = 2 * Math.PI * 16;
-    ringFill.style.strokeDasharray = circumference;
-    ringFill.style.strokeDashoffset = '0';
-
-    screens.results.addEventListener('click', restartResetTimer);
-
-    warningTimer = setTimeout(() => {
-      indicator.classList.add('visible');
-      const remaining = RESULTS_TIMEOUT - RESULTS_WARNING;
-      let elapsed = 0;
-      countdownInterval = setInterval(() => {
-        elapsed += 1000;
-        const progress = elapsed / remaining;
-        ringFill.style.strokeDashoffset = (circumference * progress).toString();
-      }, 1000);
-    }, RESULTS_WARNING);
-
-    resetTimer = setTimeout(() => {
-      resetApp();
-    }, RESULTS_TIMEOUT);
+  function initResetTrigger() {
+    const branding = $('.results-branding');
+    branding.addEventListener('click', handleResetTap);
   }
 
-  function restartResetTimer() {
-    clearResetTimers();
-    $('#reset-indicator').classList.remove('visible');
-    startResetTimer();
-  }
-
-  function clearResetTimers() {
-    clearTimeout(resetTimer);
-    clearTimeout(warningTimer);
-    clearInterval(countdownInterval);
-    resetTimer = null;
-    warningTimer = null;
-    countdownInterval = null;
-  }
-
-  function resetApp() {
-    clearResetTimers();
-    screens.results.removeEventListener('click', restartResetTimer);
-    $('#reset-indicator').classList.remove('visible');
-    stopConfetti();
-    showScreen('welcome');
+  function handleResetTap() {
+    const now = Date.now();
+    if (now - resetTapTime < RESET_DOUBLE_TAP_WINDOW) {
+      // Double-tap detected — reset
+      resetTapTime = 0;
+      stopConfetti();
+      showScreen('welcome');
+    } else {
+      resetTapTime = now;
+    }
   }
 
   // ---- LocalStorage Persistence ----
@@ -696,6 +657,7 @@
     initWelcome();
     initContactForm();
     initAnswerCards();
+    initResetTrigger();
   }
 
   if (document.readyState === 'loading') {
