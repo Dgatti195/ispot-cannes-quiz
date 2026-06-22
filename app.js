@@ -20,24 +20,24 @@
       name: 'The Glow Getter',
       description: 'For those focused on looking refreshed between meetings and dinners',
       products: [
-        { name: 'Revitalizing Eye Patches', emoji: '✨' },
-        { name: 'Refreshing Facial Mist', emoji: '💧' }
+        { name: 'Exfoliation Cleanser', emoji: '✨' },
+        { name: 'Revitalizing Eye Patches', emoji: '👁️' }
       ]
     },
     powerNetworker: {
       name: 'The Power Networker',
       description: 'For the ones constantly socializing and on the move',
       products: [
-        { name: 'Shea Butter Hand Cream', emoji: '🤝' },
-        { name: 'Shea Lip Balm', emoji: '💋' }
+        { name: 'Shea Lip Balm', emoji: '💋' },
+        { name: 'Shea Butter Hand Cream', emoji: '🤝' }
       ]
     },
     recharger: {
       name: 'The Recharger',
       description: 'For those who need moments of calm between the chaos',
       products: [
-        { name: 'Relaxing Aromatherapy Roller', emoji: '🌿' },
-        { name: 'Cooling Hand Gel', emoji: '❄️' }
+        { name: 'Pillow Mist', emoji: '🌙' },
+        { name: 'Overnight Mask', emoji: '✨' }
       ]
     }
   };

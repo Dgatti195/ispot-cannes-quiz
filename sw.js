@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ispot-cannes-v5';
+const CACHE_NAME = 'ispot-cannes-v6';
 const ASSETS = [
   './',
   './index.html',
